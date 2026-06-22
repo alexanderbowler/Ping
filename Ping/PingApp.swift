@@ -1,10 +1,3 @@
-//
-//  PingApp.swift
-//  Ping
-//
-//  Created by Alexander Bowler on 2/6/26.
-//
-
 import SwiftUI
 import SwiftData
 
@@ -12,7 +5,7 @@ import SwiftData
 struct PingApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            PingContact.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -23,10 +16,36 @@ struct PingApp: App {
         }
     }()
 
+    @Environment(\.scenePhase) private var scenePhase
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .onAppear {
+                    NotificationManager.shared.requestPermission()
+                }
         }
         .modelContainer(sharedModelContainer)
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                rescheduleNotifications()
+            } else if newPhase == .background {
+                scheduleImmediateOverdueNotifications()
+            }
+        }
+    }
+
+    private func rescheduleNotifications() {
+        let context = sharedModelContainer.mainContext
+        let descriptor = FetchDescriptor<PingContact>()
+        guard let contacts = try? context.fetch(descriptor) else { return }
+        NotificationManager.shared.rescheduleAll(contacts: contacts)
+    }
+
+    private func scheduleImmediateOverdueNotifications() {
+        let context = sharedModelContainer.mainContext
+        let descriptor = FetchDescriptor<PingContact>()
+        guard let contacts = try? context.fetch(descriptor) else { return }
+        NotificationManager.shared.scheduleImmediateNotifications(for: contacts)
     }
 }

@@ -1,0 +1,40 @@
+# Xcode
+.DS_Store
+
+# Build and derived data
+/build
+DerivedData/
+
+# User-specific Xcode data
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xcuserstate
+xcuserdata/
+
+# Workspace settings
+*.xccheckout
+*.xcscmblueprint
+
+# Swift Package Manager
+.swiftpm/
+.build/
+
+# CocoaPods
+Pods/
+
+# Carthage
+Carthage/Build/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/
+
+# SwiftLint
+.swiftlint.yml
+
+# Logs
+*.log

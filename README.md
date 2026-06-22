@@ -1,3 +1,15 @@
-# Network App
+# Ping
+
 ## About
-This repo contains an IOS app which tracks people in your personal and professional network, and creates reminders for you to schedule meetings with them and keep in touch with them. You can add various contacts and customize how often you should meet with them.
+Ping is an iOS app for tracking people in your personal and professional network and creating reminders to stay in touch. Add contacts, set your preferred cadence, and keep relationships active.
+
+## Requirements
+- macOS with Xcode (latest recommended)
+
+## Build and Run
+1. Open `Ping.xcodeproj` in Xcode.
+2. Select a simulator or device.
+3. Press `Run` (or `Cmd+R`).
+
+## Tests
+1. In Xcode, press `Cmd+U`.
