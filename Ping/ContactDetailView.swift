@@ -14,38 +14,37 @@ struct ContactDetailView: View {
     var body: some View {
         List {
             Section {
-                HStack {
-                    Text("Name")
-                    Spacer()
-                    Text(contact.name)
-                        .foregroundStyle(.secondary)
+                LabeledContent("Name") {
+                    TextField("Name", text: $contact.name)
+                        .multilineTextAlignment(.trailing)
                 }
 
-                if let phone = contact.phoneNumber {
-                    HStack {
-                        Text("Phone")
-                        Spacer()
-                        Text(phone)
-                            .foregroundStyle(.secondary)
-                    }
+                LabeledContent("Phone") {
+                    TextField("Optional", text: Binding(
+                        get: { contact.phoneNumber ?? "" },
+                        set: { contact.phoneNumber = $0.isEmpty ? nil : $0 }
+                    ))
+                    .keyboardType(.phonePad)
+                    .multilineTextAlignment(.trailing)
                 }
 
-                if let email = contact.email {
-                    HStack {
-                        Text("Email")
-                        Spacer()
-                        Text(email)
-                            .foregroundStyle(.secondary)
-                    }
+                LabeledContent("Email") {
+                    TextField("Optional", text: Binding(
+                        get: { contact.email ?? "" },
+                        set: { contact.email = $0.isEmpty ? nil : $0 }
+                    ))
+                    .keyboardType(.emailAddress)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                    .multilineTextAlignment(.trailing)
                 }
 
-                if let company = contact.company {
-                    HStack {
-                        Text("Company")
-                        Spacer()
-                        Text(company)
-                            .foregroundStyle(.secondary)
-                    }
+                LabeledContent("Company") {
+                    TextField("Optional", text: Binding(
+                        get: { contact.company ?? "" },
+                        set: { contact.company = $0.isEmpty ? nil : $0 }
+                    ))
+                    .multilineTextAlignment(.trailing)
                 }
             }
 

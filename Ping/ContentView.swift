@@ -5,6 +5,7 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \PingContact.nextPingDate) private var contacts: [PingContact]
     @State private var showingAddContact = false
+    @State private var searchText = ""
 
     var body: some View {
         NavigationStack {
@@ -15,6 +16,21 @@ struct ContentView: View {
                         systemImage: "person.crop.circle.badge.plus",
                         description: Text("Add someone to get reminded to reach out to them.")
                     )
+                } else if isSearching {
+                    if searchResults.isEmpty {
+                        ContentUnavailableView.search(text: searchText)
+                    } else {
+                        List {
+                            ForEach(searchResults) { contact in
+                                NavigationLink(value: contact) {
+                                    ContactRow(contact: contact)
+                                }
+                            }
+                            .onDelete { offsets in
+                                deleteContacts(offsets, from: searchResults)
+                            }
+                        }
+                    }
                 } else {
                     List {
                         if !overdueContacts.isEmpty {
@@ -46,6 +62,8 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("Ping")
+            .searchable(text: $searchText, prompt: "Search contacts")
+            .searchToolbarBehavior(.minimize)
             .navigationDestination(for: PingContact.self) { contact in
                 ContactDetailView(contact: contact)
             }
@@ -57,10 +75,27 @@ struct ContentView: View {
                         Label("Add Contact", systemImage: "plus")
                     }
                 }
+                DefaultToolbarItem(kind: .search, placement: .bottomBar)
             }
             .sheet(isPresented: $showingAddContact) {
                 AddContactView()
             }
+        }
+    }
+
+    private var isSearching: Bool {
+        !searchText.trimmingCharacters(in: .whitespaces).isEmpty
+    }
+
+    private var searchResults: [PingContact] {
+        let query = searchText.trimmingCharacters(in: .whitespaces).lowercased()
+        guard !query.isEmpty else { return contacts }
+        return contacts.filter { contact in
+            if contact.name.lowercased().contains(query) { return true }
+            if let phone = contact.phoneNumber, phone.lowercased().contains(query) { return true }
+            if let email = contact.email, email.lowercased().contains(query) { return true }
+            if let company = contact.company, company.lowercased().contains(query) { return true }
+            return false
         }
     }
 
